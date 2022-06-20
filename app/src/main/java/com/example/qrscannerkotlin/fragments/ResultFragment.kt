@@ -26,7 +26,7 @@ class ResultFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_result, container, false)
         result = arguments?.getString("result")
-        splitText(view)
+        setDataToResultScreen(view, result.toString())
         clickListener(view)
         return view
     }
@@ -48,14 +48,10 @@ class ResultFragment : Fragment() {
             })
     }
 
-    private fun splitText(view : View){
-        //split делит элементы по запятой и пробелу, т.к. КУары которые я сделал,
-        // в них названия делятся через запятую с пробелом, нужно будет изменить
-        val strings = result?.split(", ")?.toTypedArray()
-        setImage(view, strings?.get(0).toString())
-        setText(view, strings?.get(1).toString())
+    private fun setDataToResultScreen(view : View, result : String){
+        setImage(view, result)
+        setText(view, result)
     }
-
 
     private fun setImage(view : View, imageFile : String){
         val inputStream : InputStream? = activity?.assets?.open("$imageFile.jpg")

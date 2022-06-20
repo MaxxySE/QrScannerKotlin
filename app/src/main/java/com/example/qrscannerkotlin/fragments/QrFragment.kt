@@ -1,19 +1,18 @@
 package com.example.qrscannerkotlin.fragments
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.budiyev.android.codescanner.*
 import com.example.qrscannerkotlin.Communicator
 import com.example.qrscannerkotlin.MainActivity
 import com.example.qrscannerkotlin.R
+import kotlin.reflect.typeOf
 
 
 class QrFragment : Fragment() {
@@ -55,13 +54,12 @@ class QrFragment : Fragment() {
             formats = CodeScanner.ALL_FORMATS
 
             autoFocusMode = AutoFocusMode.SAFE
-            scanMode = ScanMode.CONTINUOUS
+            scanMode = ScanMode.SINGLE
             isAutoFocusEnabled = true
             isFlashEnabled = false
 
             decodeCallback = DecodeCallback {
-                communicator.passData(it.toString())
-                println(it.toString())
+                checkAndDisplayQrResultData(it.toString())
             }
 
             errorCallback = ErrorCallback {
@@ -69,6 +67,28 @@ class QrFragment : Fragment() {
                     Log.e("Main", "Camera initialization error: ${it.message}")
                 }
             }
+        }
+
+        scannerView.setOnClickListener {
+            codeScanner.startPreview()
+        }
+
+    }
+
+    private fun checkAndDisplayQrResultData(it : String){
+        if(it.contains("File")){
+            communicator.passData(it)
+            println(it)
+        } else {
+            writeNotification(it)
+        }
+    }
+
+    private fun writeNotification(it : String){
+        activity?.runOnUiThread {
+            Toast.makeText(activity, "This QR or barcode is not supported by this app", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "It contains: $it", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "Press on the screen to continue scanning", Toast.LENGTH_LONG).show()
         }
     }
 
